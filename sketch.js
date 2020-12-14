@@ -9,16 +9,21 @@ var backgroundImg,platform;
 var bird, slingshot;
 
 var gameState = "onSling";
+var backgroundImage;
+var bg = "sprites/bg.png";
+var score=0;
 
 function preload() {
-    backgroundImg = loadImage("sprites/bg.png");
+
+    //backgroundImg = loadImage("sprites/bg.png");
+
+    getBackgroundImg();
 }
 
 function setup(){
     var canvas = createCanvas(1200,400);
     engine = Engine.create();
     world = engine.world;
-
 
     ground = new Ground(600,height,1200,20);
     platform = new Ground(150, 305, 300, 170);
@@ -44,19 +49,32 @@ function setup(){
     slingshot = new SlingShot(bird.body,{x:200, y:50});
 }
 
+
+
+
 function draw(){
+    if(backgroundImg){
     background(backgroundImg);
+    }
+//strokeWeight(4);
+    textSize(35)
+    fill(255);
+    text("score = "+ score,width-300,80);
     Engine.update(engine);
-    //strokeWeight(4);
+
+    
+
     box1.display();
     box2.display();
     ground.display();
     pig1.display();
+    pig1.score();
     log1.display();
 
     box3.display();
     box4.display();
     pig3.display();
+    pig3.score();
     log3.display();
 
     box5.display();
@@ -66,13 +84,15 @@ function draw(){
     bird.display();
     platform.display();
     //log6.display();
-    slingshot.display();    
+    slingshot.display(); 
+   // getTime();
+     
 }
 
 function mouseDragged(){
-    if (gameState!=="launched"){
+   // if (gameState!=="launched"){
         Matter.Body.setPosition(bird.body, {x: mouseX , y: mouseY});
-    }
+    //}
 }
 
 
@@ -82,7 +102,58 @@ function mouseReleased(){
 }
 
 function keyPressed(){
-    if(keyCode === 32){
-       // slingshot.attach(bird.body);
+    if(keyCode === 32 && bird.body.speed<0.5){
+       bird.trajectory=[]; //to delete the previous trajectory path.
+       Matter.Body.setPosition(bird.body,{x:200,y:50});
+        slingshot.attach(bird.body);
+       
     }
 }
+
+/*async function getTime(){
+var response = await fetch("http://worldtimeapi.org/api/timezone/Asia/Kolkata");
+
+var responseJSON = await response.json(); 
+
+console.log(responseJSON.datetime);  
+}*/
+
+/*async function getBackgroundImg(){
+   
+    var response = await fetch("http://worldtimeapi.org/api/timezone/Asia/Kolkata");
+
+    var responseJSON = await response.json(); 
+     
+    var dateTime = responseJSON.datetime;
+
+    var hour = dateTime.slice(11,13);
+
+    if(hour>=00 && hour<=1900){
+      bg = "sprites/bg.png" ;  
+    }else{
+        bg ="sprites/bg2.jpg";
+    }
+
+    backgroundImg = loadImage(bg);
+    console.log(backgroundImg);
+
+} */
+
+
+async function getBackgroundImg(){
+    var response = await fetch("http://worldtimeapi.org/api/timezone/Asia/Tokyo");
+    var responseJSON = await response.json();
+    var datetime = responseJSON.datetime;
+    var hour = datetime.slice(11,13);
+
+    //if(hour>=0600 && hour<=1900){
+    if(hour>=06 && hour<=20){
+        bg = "sprites/bg.png";
+    }
+    else{
+        bg = "sprites/bg2.jpg";
+    }
+
+    backgroundImg = loadImage(bg);
+    console.log(backgroundImg);
+} 
